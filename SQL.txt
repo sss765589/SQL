@@ -1,0 +1,134 @@
+  CREATE TABLE Hotels (
+  HotelsID integer primary key,
+   HotelsName varchar(20),
+   location varchar(10),
+   Rating decimal
+   
+  
+);
+INSERT INTO Hotels VALUES (1,"sunset" ,"jeddah",4.3);
+INSERT INTO Hotels VALUES (2,"palm resort","jeddah",3.0);
+INSERT INTO Hotels VALUES (3,"mountain view","abha",5.0);
+
+
+CREATE TABLE Rooms(
+ RoomsID integer primary KEY,
+ HotelsID integer,
+ RoomType varchar(10),
+ pricePerNight decimal,
+ availability varchar(10),
+foreign key (HotelsID) references Hotels(HotelsID) 
+);
+INSERT INTO Rooms VALUES (101,1,"single",250.00,"True");
+INSERT INTO Rooms VALUES (102,1,"double",400.00,"False");
+INSERT INTO Rooms VALUES (201,2,"suite",750.00,"false");
+INSERT INTO Rooms VALUES (202,2,"single",280.00,"True");
+INSERT INTO Rooms VALUES(301,3,"double",400,"False");
+
+CREATE TABLE Customers (
+  CustomersID integer primary KEY,
+  FristName varchar(10),
+  lastName varchar(10),
+  phoneNumber integer
+  
+);
+
+INSERT INTO Customers  VALUES (11297557,"sarah ","johnson ",0507866666);
+INSERT INTO Customers  VALUES (12243567,"ali","mansour",0554344446);
+INSERT INTO Customers  VALUES (11243678,"mohammed","al qahtani",0554231786);
+
+
+CREATE TABLE Booking (
+  BookingID integer primary key,
+ CustomersID integer,
+   RoomsID integer,
+  checkinDate date,
+  checkoutDate date ,
+  BookingStatue varchar(10),
+  HotelsID integer,
+  foreign key (HotelsID)references Hotels(HotelsID),
+  foreign key(CustomersID)references Customers(CustomersID),
+  foreign key ( RoomsID ) references Rooms(RoomsID )
+);
+INSERT INTO Booking  VALUES (1001,11297557,102,'2025-8-10','2025-8-15',"certain",1);
+INSERT INTO Booking  VALUES (1002,12243567,201,'2025-8-12','2025-8-14',"certain",2);
+INSERT INTO Booking  VALUES (1003,11243678,301,'2025-8-11','2025-8-13',"cancel",3);
+
+
+CREATE TABLE Services (
+  servicesID integer primary key,
+  servicesName varchar(100),
+  servicesPrice decimal
+
+);
+INSERT INTO  Services VALUES (1,"room Servise",50.00);
+INSERT INTO  Services VALUES (2,'laundry',30.0);
+INSERT INTO Services VALUES (3,"gym access",15.00);
+INSERT INTO  Services VALUES (4,"Wi-Fi permium ",10.00);
+           
+ update Rooms
+ set RoomType = "suite", pricePerNight="750"
+ where RoomType  ="single" and HotelsID= 2 ; 
+
+select HotelsName,count(RoomsID)  
+from Hotels
+join Rooms on Hotels.HotelsID=Rooms.HotelsID                     
+group by HotelsName;
+
+select HotelsName,count(BookingID)
+from Hotels
+join Booking on Hotels.HotelsID=Booking.HotelsID
+group by HotelsName;
+
+select HotelsName,RoomType, availability
+from Hotels
+join Rooms on Hotels.HotelsID=Rooms.HotelsID
+where availability like 'T%';
+
+select servicesID,servicesName
+from Services;
+
+ select FristName,lastName,checkinDate,HotelsName,phoneNumber
+ from Customers
+ join Booking on Booking.CustomersID=Customers.CustomersID
+ join Hotels on Booking.HotelsID=Hotels.HotelsID;
+ 
+ 
+ select  distinct RoomType,pricePerNight
+ from Rooms
+ order by pricePerNight desc;
+  
+  select RoomType,pricePerNight
+  from Rooms
+  where pricePerNight between 200 and 500;
+  
+ select  location,count(*) as city
+ from Hotels 
+ group by location;
+
+select HotelsName,(select count(pricePerNight)
+from Rooms
+where Hotels.HotelsID=Rooms.HotelsID and availability="True") as total 
+from Hotels;
+
+select sum(servicesPrice)as TotalServices
+from Services;
+
+select HotelsName,count(RoomsID)
+from Hotels
+join Rooms on Rooms.HotelsID=Hotels.HotelsID
+group by HotelsName
+having count(RoomsID)>1;
+
+select servicesName,servicesPrice
+from Services
+where servicesPrice=(select max(servicesPrice) from Services);
+
+
+
+
+
+
+
+
+
